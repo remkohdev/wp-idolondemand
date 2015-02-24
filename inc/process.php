@@ -169,4 +169,27 @@ function wp_idolondemand_index_all_posts() {
 	exit;
 }
 
+function wp_idolondemand_check_jobid_status() {
+
+	if(!current_user_can( 'manage_options' )) {
+		wp_die( 'You are not allowed to \'check_jobid_status\'.' );
+	}
+	// Check that nonce field
+	check_admin_referer('wp-idolondemand_op_verify');
+
+	$result = "";
+	if(isset($_POST['jobids_to_check']) && !empty($_POST['jobids_to_check']) ){
+		$jobids_to_check = $_POST['jobids_to_check'];
+		
+		// process action
+		$result = wp_idolondemand_check_job_status_jobid($jobids_to_check);
+		
+	}
+	
+	wp_redirect(admin_url( 'admin.php?page=wp-idolondemand/inc/menu.inc.php_indexing&m=6'.$result));
+
+	exit;
+}
+
+
 ?>

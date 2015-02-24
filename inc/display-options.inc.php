@@ -206,7 +206,7 @@ function wp_idolondemand_display_content_indexing() {
 					<li class="index-options"><input type="checkbox" name="add_to_text_index_post_sections[]" value="title" <?php  echo $post_sections_checked['title'];  ?>  class="add_to_text_index_post_sections_checkbox" id="add_to_text_index_post_sections_title_checkbox">Title</li>
 					<li class="index-options"><input type="checkbox" name="add_to_text_index_post_sections[]" value="body" <?php  echo $post_sections_checked['body'];  ?> class="add_to_text_index_post_sections_checkbox" id="add_to_text_index_post_sections_body_checkbox">Content</li>
 					<li class="index-options"><input type="checkbox" name="add_to_text_index_post_sections[]" value="tags" <?php  echo $post_sections_checked['tags'];  ?> class="add_to_text_index_post_sections_checkbox" id="add_to_text_index_post_sections_tags_checkbox">Tags</li>
-					<li class="index-options"><input type="checkbox" name="add_to_text_index_post_sections[]" value="categories" <?  echo $post_sections_checked['categories']; ?> class="add_to_text_index_post_sections_checkbox" id="add_to_text_index_post_sections_categories_checkbox">Categories</li>
+					<li class="index-options"><input type="checkbox" name="add_to_text_index_post_sections[]" value="categories" <?php  echo $post_sections_checked['categories']; ?> class="add_to_text_index_post_sections_checkbox" id="add_to_text_index_post_sections_categories_checkbox">Categories</li>
 				</ul>
 				<?php 
 				/**
@@ -241,6 +241,7 @@ function wp_idolondemand_display_content_indexing() {
 			 <input type="submit" value="Index All Posts" class="button-primary"/>
 		</form>
 		<br>
+		
 		<h2>Previous JobIDs Log</h2>
 		<?php 
 			$logs = wp_idolondemand_get_logs("wp_idolondemand_job_id");
@@ -249,16 +250,35 @@ function wp_idolondemand_display_content_indexing() {
 				// if status of job is completed, delete jobID
 				// if status of job is not completed, display jobID and status here
 				?>
+				
+				<form method="post" action="admin-post.php">
+	         		<?php wp_nonce_field( 'wp-idolondemand_op_verify' ); ?>
+	         		<input type="hidden" name="action" value="wp_idolondemand_check_jobid_status" />
+			 		
+			 
 				<table border="1">
-				<tr><th>&nbsp;</th><th>JobId</th><th>Status</th><th>Last updated</th></tr>
+				<tr><th>Check Status</th><th>JobId</th><th>Status</th><th>Last updated</th></tr>
 				<?php 
 				foreach($logs as $log){
 					?>
-					<tr><td><input type="button" value="check now"></td><td><?php echo $log['jobId']; ?></td><td>&nbsp;</td><td><?php echo $log['datetime1']; ?></td></tr>
+					<tr>
+					  <td><?php 
+					  if($log['status']!='finished' &&
+					  	 $log['status']!='failed') { ?>
+					  <input type="checkbox" value="<?php echo $log['jobId']; ?>" name="jobids_to_check[]"> 
+					  <?php } ?>
+					  </td>
+					  <td><?php echo $log['jobId']; ?></td>
+					  <td><?php echo $log['status']; ?></td>
+					  <td><?php echo $log['datetime1']; ?></td>
+					</tr>
 					<?php
 				}
 				?>
 				</table>
+				<br>
+					<input type="submit" value="Check Status" class="button-primary"/>
+				</form>
 				<?php
 			}
 		?>

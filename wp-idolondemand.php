@@ -55,11 +55,13 @@ add_action( 'admin_menu', 'wp_idolondemand_menu' );// see inc/menu.inc.php
 add_action( 'admin_post_wp_idolondemand_save_apikey', 'wp_idolondemand_save_apikey' );// see inc/process.php
 add_action( 'admin_post_wp_idolondemand_use_this_index', 'wp_idolondemand_use_this_index' );// see inc/process.php
 add_action( 'admin_post_wp_idolondemand_add_to_text_index_options', 'wp_idolondemand_add_to_text_index_options');// see inc/process.php
-//add_action( 'admin_post_wp_idolondemand_index_all_posts', 'wp_idolondemand_index_all_posts');// see inc/process.php
 
 add_action( 'admin_post_wp_idolondemand_create_index', 'wp_idolondemand_create_index' );
 add_action( 'admin_post_wp_idolondemand_index_all_posts', 'wp_idolondemand_index_all_posts' );
+add_action( 'admin_post_wp_idolondemand_check_jobid_status', 'wp_idolondemand_check_jobid_status' );
+
 add_action( 'wp_idolondemand_get_sentiment', 'wp_idolondemand_get_sentiment_for_post' );
+
 add_action( 'edit_post', 'wp_idolondemand_edit_post' );
 add_action( 'save_post', 'wp_idolondemand_save_post' );
 add_action( 'delete_post', 'wp_idolondemand_delete_post' );

@@ -175,7 +175,7 @@ function process_response($response, $sync_or_async){
 				$jobId = $json->jobID;
 				$key1 = "wp_idolondemand_job_id";
 				$value1 = $jobId;
-				$result = wp_idolondemand_save_log($key1, $value1);
+				$result = wp_idolondemand_save_log($key1, $value1,'');
 				$msg = "";
 			}else{
 				// error
@@ -246,18 +246,27 @@ function send_multipart_post_message_with_json_via_file_get_contents($sync_or_as
 	$data .= '--' . $mime_boundary . $eol;
 	$data .= 'Content-Disposition: form-data; name="json"; filename="allposts.json"' . $eol;
 	$data .= 'Content-Type: application/json' . $eol;
-	$data .= 'Content-Transfer-Encoding: base64' . $eol . $eol;
-	$data .= chunk_split(base64_encode($json1)) . $eol;
+	
+	//$data .= 'Content-Transfer-Encoding: base64' . $eol . $eol;
+	//$data .= chunk_split(base64_encode($json1)) . $eol;
+	$data .= 'Content-Transfer-Encoding: 8bit' . $eol . $eol;
+	$data .= $json1 . $eol;
+	
 	$data .= "--" . $mime_boundary . "--" . $eol . $eol; // finish with two eol's!!
+	
+	//error_log($data, 3, "C:/dev/xampp/apache/logs/remkohde_idolondemand_data.txt");
 	
 	$params = array('http' => array(
 			'method' => 'POST',
 			'header' => 'Content-Type: multipart/form-data; boundary=' . $mime_boundary . $eol,
-			'content' => $data,
-			'proxy' => 'tcp://localhost:8888' // for Charles http traffic
+			'content' => $data
+			//, 'proxy' => 'tcp://localhost:8888' // for Charles http traffic
 	));
 	$ctx = stream_context_create($params);
 	$response = file_get_contents($url, FILE_TEXT, $ctx);
+	
+	//error_log($response, 3, "C:/dev/xampp/apache/logs/remkohde_idolondemand_response.txt");
+	
 	return $response;
 }
 
@@ -348,11 +357,6 @@ function wp_idolondemand_get_posts_as_json($post_ids){
 	foreach($post_ids as $post_id){
 	
 		$post = get_post($post_id);
-		//$post_url = get_permalink($post_id);
-		// security prevent XSS
-		// $post_content = json_encode($post_content, JSON_HEX_APOS);
-		// $post_content = json_encode($post_content, JSON_HEX_QUOT);
-		// note: json_encode adds double quotes at beginning and end, 
 		
 		$post_title = $post->post_title;
 		$post_title = wp_idolondemand_get_value_as_json($post_title);
@@ -455,7 +459,8 @@ function wp_idolondemand_get_logs($key1) {
 			if($post_index_log->value1){
 				$jobId = $post_index_log->value1;
 				$datetime1 = $post_index_log->datetime1;
-				$log = array('jobId'=>$jobId, 'datetime1'=>$datetime1);
+				$status1 = $post_index_log->status;
+				$log = array('jobId'=>$jobId, 'datetime1'=>$datetime1, 'status'=>$status1);
 				array_push($result, $log);
 			}
 		}
@@ -467,7 +472,7 @@ function wp_idolondemand_get_logs($key1) {
 	return $result;
 }
 
-function wp_idolondemand_save_log($key1, $value1) {
+function wp_idolondemand_save_log($key1, $value1, $status) {
 
 	global $wpdb;
 	$tbl_wp_idolondemand_log = $wpdb->prefix . "idolondemand_log";
@@ -477,11 +482,12 @@ function wp_idolondemand_save_log($key1, $value1) {
 			array(
 					'key1' => $key1,
 					'value1' => $value1,
-					'datetime1' => date('Y-m-d G:i:s')
+					'datetime1' => date('Y-m-d G:i:s'),
+					'status' => $status
 			)
 	);
 	if($result){
-		$result_msg = "Command 'replace' for [".$key1."][".$value1."] was successful. ".
+		$result_msg = "Command 'replace' for [".$key1."][".$value1."] was successful, status[".$status."]".
 			 "Number of rows affected: ". $result;
 	}else{
 		// TODO error handle
@@ -509,12 +515,55 @@ function wp_idolondemand_get_post_index_metadata($post_id, $key1) {
 	return $result;
 }
 
-function wp_idolondemand_check_jobid_status($jobId){
-	//curl "https://api.idolondemand.com/1/job/status/$jobID?apikey=$apikey"
-	
-	
+function wp_idolondemand_check_job_status_jobid($jobids_to_check){
+	$msg = "";
+	foreach($jobids_to_check as $jobid){
+		
+		// check jobid status
+		$jobstatusUrl = wp_idolondemand_get_jobstatus_get_url($jobid);
+		$response = file_get_contents($jobstatusUrl);
+		
+		$jobstatus = "";
+		// response processing
+		if ($response) {
+			
+			// poll for jobid status
+			$status = process_jobstatus_response($response);
+			
+			// save jobid status to log
+			$key1 = "wp_idolondemand_job_id";
+			$value1 = $jobid;
+			$result = wp_idolondemand_save_log($key1, $value1, $status);
+			
+		}else{
+			// TODO proper error handling
+			$msg .= "Error: No response. HTTP statuscode: ";
+		}
+		
+		$msg .= $jobid .'&status='.$jobstatus;
+	}
+	return $s;	
 }
 
+function wp_idolondemand_get_jobstatus_get_url($jobid){
+	$apikey = wp_idolondemand_get_setting('apikey');
+	$jobstatusUrl = sprintf("https://api.idolondemand.com/1/job/status/%s?apikey=%s",
+			$jobid, $apikey);
+	return $jobstatusUrl;
+}
+
+function process_jobstatus_response($response) {
+	
+	$status = "";
+	$json = json_decode($response);
+	if($json){
+		if(isset($json->status)){
+			$status = $json->status;
+		}
+	}
+	
+	return $status;
+}
 
 function wp_idolondemand_edit_post()
 {
