@@ -225,50 +225,7 @@ function send_x_www_form_post_message_with_json_via_curl($sync_or_async, $json1)
 }
 
 
-function send_multipart_post_message_with_json_via_file_get_contents($sync_or_async, $json1){
-	
-	$url = "https://api.idolondemand.com/1/api/".$sync_or_async."/addtotextindex/v1";
-	
-	$index1 = wp_idolondemand_get_index();
-	$apikey = wp_idolondemand_get_setting('apikey');
-	
-	$eol = "\r\n";
-	$data = '';
-	
-	$mime_boundary=md5(time());
-	
-	$data .= '--' . $mime_boundary . $eol;
-	$data .= 'Content-Disposition: form-data; name="apikey"' . $eol . $eol;
-	$data .= $apikey . $eol;
-	$data .= '--' . $mime_boundary . $eol;
-	$data .= 'Content-Disposition: form-data; name="index"' . $eol . $eol;
-	$data .= $index1 . $eol;
-	$data .= '--' . $mime_boundary . $eol;
-	$data .= 'Content-Disposition: form-data; name="json"; filename="allposts.json"' . $eol;
-	$data .= 'Content-Type: application/json' . $eol;
-	
-	//$data .= 'Content-Transfer-Encoding: base64' . $eol . $eol;
-	//$data .= chunk_split(base64_encode($json1)) . $eol;
-	$data .= 'Content-Transfer-Encoding: 8bit' . $eol . $eol;
-	$data .= $json1 . $eol;
-	
-	$data .= "--" . $mime_boundary . "--" . $eol . $eol; // finish with two eol's!!
-	
-	//error_log($data, 3, "C:/dev/xampp/apache/logs/remkohde_idolondemand_data.txt");
-	
-	$params = array('http' => array(
-			'method' => 'POST',
-			'header' => 'Content-Type: multipart/form-data; boundary=' . $mime_boundary . $eol,
-			'content' => $data
-			//, 'proxy' => 'tcp://localhost:8888' // for Charles http traffic
-	));
-	$ctx = stream_context_create($params);
-	$response = file_get_contents($url, FILE_TEXT, $ctx);
-	
-	//error_log($response, 3, "C:/dev/xampp/apache/logs/remkohde_idolondemand_response.txt");
-	
-	return $response;
-}
+
 
 function wp_idolondemand_list_indexes(){
 	$indexes = null;

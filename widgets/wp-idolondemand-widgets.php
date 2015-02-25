@@ -5,40 +5,99 @@
  */
 function init_wp_idolondemand_widgets()
 {
+	// Find Similar
 	wp_register_sidebar_widget(
-	'wp_idolondemand_post_analytics' ,
-	__('IDOL OnDemand Post Sentiment'),
-	'wp_idolondemand_post_analytics',
-	array(                            // options
-	'description' => 'Add IDOL OnDemand post sentiment.'
+		'wp_idolondemand_find_similar' ,
+		__('IDOL OnDemand Find Similar'),
+		'wp_idolondemand_find_similar',
+		array( // options
+			'description' => 'Add find similar posts.'
 			)
+	);
+	
+	// Sentiment Analysis
+	wp_register_sidebar_widget(
+		'wp_idolondemand_post_sentiment' ,
+		__('IDOL OnDemand Post Sentiment'),
+		'wp_idolondemand_post_sentiment',
+		array( // options
+			'description' => 'Add post sentiment.'
+		)
 	);
 	// IDOL OnDemand Twitter feed
 	wp_register_sidebar_widget(
 		'wp_idolondemand_twitterfeed' ,
 		__('IDOL OnDemand Twitter'),
 		'wp_idolondemand_twitterfeed',
-		array(                            // options
+		array( // options
 			'description' => 'Add an IDOL OnDemand Twitter feed to your page.'
 		)
 	);
 }
 
 /**
- * IDOL OnDemand Post Analytics Widget
+ * IDOL OnDemand Find Similar Widget
  *
  * @param unknown $args
  */
-function wp_idolondemand_post_analytics($args) {
+function wp_idolondemand_find_similar($args) {
 	extract($args);
 	echo $before_widget;
-	echo $before_title;?>IDOL OnDemand Post Analytics<?php echo $after_title;
-	display_wp_idolondemand_post_analytics();
+	echo $before_title;?>Find Similar<?php echo $after_title;
+	display_wp_idolondemand_find_similar();
 	echo $after_widget;
 }
-function display_wp_idolondemand_post_analytics()
+
+function display_wp_idolondemand_find_similar()
 {?>
-	<div class="idolondemand-post-analytics">
+	<div class="idolondemand-find-similar">
+	<?php 
+	$similar_html = '<h1>Similar Posts</h1>';
+	$similar_posts = wp_idolondemand_find_similar_to_post(); 
+	
+	$max = sizeof($similar_posts);
+	
+	for ($i=0; $i<$max; $i++)
+	{
+		$post = $similar_posts[$i];
+			
+		$reference = $post['reference'];
+		$title = $post['title'];
+		if(empty($title)){
+			$title = 'No Title';	
+		}
+		$weight = $post['weight'];
+		$summary = $post['summary'];
+		
+		$similar_html .= '<h2>'.$title.'</h2>';
+		$similar_html .= '<p>'.$summary.'</p>';
+		$similar_html .= '<p>weight: '.$weight.'</p>';
+	}
+	error_log($similar_html, 3, "C:/dev/xampp/apache/logs/remkohde_idolondemand_data.txt");
+	
+	echo $similar_html;
+	?>
+	</div><!-- .idolondemand-find-similar -->
+	<?php 		
+}
+
+
+/**
+ * IDOL OnDemand Post Sentiment Widget
+ *
+ * @param unknown $args
+ */
+function wp_idolondemand_post_sentiment($args) {
+	extract($args);
+	echo $before_widget;
+	echo $before_title;?>Post Sentiment<?php echo $after_title;
+	display_wp_idolondemand_post_sentiment();
+	echo $after_widget;
+}
+
+function display_wp_idolondemand_post_sentiment()
+{?>
+	<div class="idolondemand-post-sentiment">
 	<?php 
 	$sentiments = wp_idolondemand_get_sentiment_for_post(); 
 
@@ -50,7 +109,7 @@ function display_wp_idolondemand_post_analytics()
 	}
 	
 	?>
-	</div><!-- .idolondemand-post-analytics -->
+	</div><!-- .idolondemand-post-sentiment -->
 	<?php 		
 }
 
@@ -66,6 +125,7 @@ function wp_idolondemand_twitterfeed($args) {
 	display_wp_idolondemand_twitter_feed();
 	echo $after_widget;
 }
+
 function display_wp_idolondemand_twitter_feed()
 {?>
 	<div class="idolondemand-twitter-feed">
