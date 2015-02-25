@@ -1,4 +1,4 @@
-==DESCRIPTION
+# DESCRIPTION
 
 WP-IDOLOnDemand is a WordPress plugin that adds the power of enterprise search 
 to your WordPress site. IDOL is HP Big Data (former Autonomy) leading engine for analytics of unstructured data like text and images. 
@@ -9,7 +9,7 @@ Features include:
 - Indexing Posts and Comments in IDOL for advanced text mining
 - Widgets for Post Sentiment, Find Similar Posts
 
-==INSTALLATION
+# INSTALLATION
 
 To install the plugin in WordPress, select the 'wp-idolondemand' folder and add 
 it to a zip archive. In WordPress Plugins, go to Add New > Upload, and select 
@@ -25,12 +25,12 @@ REVIEWS
 DEVELOPERS
 
  
-==TODO
+# TODO
 
 BUGS
 
 
-==v0.1.0
+## v0.1.0
 
 NEXT:
 
@@ -46,7 +46,7 @@ ADMIN-INDEXES
 
 USER-POST-UI
 
-==v0.2.0
+## v0.2.0
 
 ADMIN
 O on deactivate, uninstall
