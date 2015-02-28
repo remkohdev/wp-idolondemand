@@ -43,7 +43,7 @@ include_once(dirname(__FILE__).'/widgets/wp-idolondemand-meta-boxes.php');
 include_once(dirname(__FILE__).'/widgets/wp-idolondemand-widgets.php');
 include_once(dirname(__FILE__).'/inc/display-options.inc.php');
 include_once(dirname(__FILE__).'/inc/iod-indexing.php');
-include_once(dirname(__FILE__).'/inc/iod-sentiment-analysis.php');
+include_once(dirname(__FILE__).'/inc/iod-text-analysis.php');
 include_once(dirname(__FILE__).'/inc/iod-search.php');
 include_once(dirname(__FILE__).'/inc/menu.inc.php');
 include_once(dirname(__FILE__).'/inc/process.php');
