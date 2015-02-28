@@ -6,8 +6,9 @@ to your WordPress site. IDOL is HP Big Data (former Autonomy) leading engine for
 For more information, check out http://www.idolondemand.com
 
 Features include:
-- Indexing Posts and Comments in IDOL for advanced text mining
-- Widgets for Post Sentiment, Find Similar Posts
+
++ Indexing Posts and Comments in IDOL for advanced text mining
++ Widgets for Post Sentiment, Find Similar Posts, Concept Extraction from Post
 
 # INSTALLATION
 
@@ -16,13 +17,14 @@ it to a zip archive. In WordPress Plugins, go to Add New > Upload, and select
 the created zip file, e.g. 'wp-idolondemand-v1.0.zip' and follow the WordPress 
 instructions.
 
-FAQ 
-SCREENSHOTS 
-CHANGELOG 
-STATS 
-SUPPORT 
-REVIEWS 
-DEVELOPERS
+# WP-HPHAVEN
+##FAQ 
+##SCREENSHOTS 
+##CHANGELOG 
+##STATS 
+##SUPPORT 
+##REVIEWS 
+##DEVELOPERS
 
  
 # TODO
